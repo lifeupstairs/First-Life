@@ -163,63 +163,115 @@ button:focus-visible {
   <div class="hearts" id="hearts"></div>
 
   <script>
-    const noBtn = document.getElementById('noBtn');
-    const yesBtn = document.getElementById('yesBtn');
-    const question = document.querySelector('.question');
-    const success = document.getElementById('success');
-    const hearts = document.getElementById('hearts');
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const buttonsWrap = document.querySelector('.buttons');
+  const question = document.querySelector('.question');
+  const success = document.getElementById('success');
+  const hearts = document.getElementById('hearts');
+  const resetBtn = document.getElementById('resetBtn');
+  const live = document.getElementById('live');
 
-    const noTexts = [
-      'Try again!',
-      'Not an option!',
-      'Why though?',
-      'Really?',
-      'Come on!',
-      'Please?',
-      'Think again!',
-      'Are you sure?'
-    ];
+  const noTexts = [
+    'Try again!',
+    'Not an option!',
+    'Why though?',
+    'Really?',
+    'Come on!',
+    'Please?',
+    'Think again!',
+    'Are you sure?'
+  ];
 
-    let noClickCount = 0;
+  let noClickCount = 0;
+  const initialNoText = noBtn.textContent;
+  const initialNoLeft = noBtn.style.left || '250px';
+  const initialNoTop = noBtn.style.top || '';
 
-    noBtn.addEventListener('click', () => {
-      noClickCount++;
-      noBtn.textContent = noTexts[noClickCount % noTexts.length];
-      moveButton();
-    });
+  function announce(msg) {
+    // Clear then set so screen readers re-announce repeated messages
+    live.textContent = '';
+    setTimeout(() => { live.textContent = msg; }, 10);
+  }
 
-    function moveButton() {
-      const maxX = 350;
-      const maxY = 150;
+  noBtn.addEventListener('click', () => {
+    noClickCount++;
+    const newText = noTexts[noClickCount % noTexts.length];
+    noBtn.textContent = newText;
+    announce(`No selected. ${newText}`);
+    moveButton();
+  });
 
-      const randomX = Math.random() * maxX - 50;
-      const randomY = Math.random() * maxY - 50;
+  function moveButton() {
+    const maxX = 350;
+    const maxY = 150;
 
-      noBtn.style.left = randomX + 'px';
-      noBtn.style.top = randomY + 'px';
+    const randomX = Math.random() * maxX - 50;
+    const randomY = Math.random() * maxY - 50;
+
+    noBtn.style.left = randomX + 'px';
+    noBtn.style.top = randomY + 'px';
+  }
+
+  yesBtn.addEventListener('click', () => {
+    question.style.display = 'none';
+    buttonsWrap.style.display = 'none';
+    success.style.display = 'block';
+    resetBtn.style.display = 'inline-block';
+    hearts.style.display = 'block';
+
+    announce('Success! Yay! You made my day!');
+    createHearts();
+
+    // Move focus to reset so keyboard users aren't stranded
+    resetBtn.focus();
+  });
+
+  function createHearts() {
+    for (let i = 0; i < 50; i++) {
+      setTimeout(() => {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '❤️';
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDelay = Math.random() * 2 + 's';
+        heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        hearts.appendChild(heart);
+      }, i * 100);
     }
+  }
 
-    yesBtn.addEventListener('click', () => {
-      question.style.display = 'none';
-      document.querySelector('.buttons').style.display = 'none';
-      success.style.display = 'block';
-      hearts.style.display = 'block';
-      createHearts();
-    });
+  function reset() {
+    // Restore UI
+    question.style.display = 'block';
+    buttonsWrap.style.display = 'flex';
+    success.style.display = 'none';
+    resetBtn.style.display = 'none';
 
-    function createHearts() {
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-          const heart = document.createElement('div');
-          heart.className = 'heart';
-          heart.textContent = '❤️';
-          heart.style.left = Math.random() * 100 + '%';
-          heart.style.animationDelay = Math.random() * 2 + 's';
-          heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-          hearts.appendChild(heart);
-        }, i * 100);
-      }
+    // Reset state
+    noClickCount = 0;
+    noBtn.textContent = initialNoText;
+
+    // Reset button position
+    noBtn.style.left = initialNoLeft;
+    noBtn.style.top = initialNoTop;
+
+    // Clear hearts + hide layer
+    hearts.innerHTML = '';
+    hearts.style.display = 'none';
+
+    announce('Reset. Back to the question.');
+    yesBtn.focus();
+  }
+
+  resetBtn.addEventListener('click', reset);
+
+  // Optional keyboard shortcut: press "R" to reset after success
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'r' || e.key === 'R') && resetBtn.style.display !== 'none') {
+      reset();
     }
-  </script>
+  });
+</script>
 </body>
 </html>
