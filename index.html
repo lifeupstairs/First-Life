@@ -28,7 +28,12 @@
       width: 100%;
       position: relative;
       z-index: 2;
-    }
+      <button id="resetBtn" style="display:none; margin-top: 18px; background:#ff1493; color:#fff;">
+  Reset ↺
+</button>
+
+<p id="live" class="sr-only" aria-live="polite"></p>
+   }
 
     h1 {
       color: #ff1493;
@@ -114,6 +119,31 @@
       font-size: 2em;
       margin-top: 20px;
     }
+
+    /* Visible keyboard focus */
+button:focus-visible {
+  outline: 3px solid #ff1493;
+  outline-offset: 3px;
+}
+
+/* Hide utility (for screen reader announcements) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Optional: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #yesBtn:hover { transform: none; }
+  .heart { animation: none; opacity: 1; }
+}
   </style>
 </head>
 
