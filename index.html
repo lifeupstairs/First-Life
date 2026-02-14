@@ -28,12 +28,7 @@
       width: 100%;
       position: relative;
       z-index: 2;
-      <button id="resetBtn" style="display:none; margin-top: 18px; background:#ff1493; color:#fff;">
-  Reset ↺
-</button>
-
-<p id="live" class="sr-only" aria-live="polite"></p>
-   }
+    }
 
     h1 {
       color: #ff1493;
@@ -119,37 +114,12 @@
       font-size: 2em;
       margin-top: 20px;
     }
-
-    /* Visible keyboard focus */
-button:focus-visible {
-  outline: 3px solid #ff1493;
-  outline-offset: 3px;
-}
-
-/* Hide utility (for screen reader announcements) */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Optional: respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  #yesBtn:hover { transform: none; }
-  .heart { animation: none; opacity: 1; }
-}
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>Hi Bubu 💕</h1>
+    <h1>Hey Srishti! 💕</h1>
     <p class="question">Will you be my Valentine?</p>
 
     <div class="buttons">
@@ -157,121 +127,69 @@ button:focus-visible {
       <button id="noBtn">No</button>
     </div>
 
-    <p class="success" id="success">Yayayay babyyy 🥹💕✨</p>
+    <p class="success" id="success">Yay! You made my day! 💕✨</p>
   </div>
 
   <div class="hearts" id="hearts"></div>
 
   <script>
-  const noBtn = document.getElementById('noBtn');
-  const yesBtn = document.getElementById('yesBtn');
-  const buttonsWrap = document.querySelector('.buttons');
-  const question = document.querySelector('.question');
-  const success = document.getElementById('success');
-  const hearts = document.getElementById('hearts');
-  const resetBtn = document.getElementById('resetBtn');
-  const live = document.getElementById('live');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const question = document.querySelector('.question');
+    const success = document.getElementById('success');
+    const hearts = document.getElementById('hearts');
 
-  const noTexts = [
-    'Try again!',
-    'Not an option!',
-    'Why though?',
-    'Really?',
-    'Come on!',
-    'Please?',
-    'Think again!',
-    'Are you sure?'
-  ];
+    const noTexts = [
+      'Try again!',
+      'Not an option!',
+      'Why though?',
+      'Really?',
+      'Come on!',
+      'Please?',
+      'Think again!',
+      'Are you sure?'
+    ];
 
-  let noClickCount = 0;
-  const initialNoText = noBtn.textContent;
-  const initialNoLeft = noBtn.style.left || '250px';
-  const initialNoTop = noBtn.style.top || '';
+    let noClickCount = 0;
 
-  function announce(msg) {
-    // Clear then set so screen readers re-announce repeated messages
-    live.textContent = '';
-    setTimeout(() => { live.textContent = msg; }, 10);
-  }
+    noBtn.addEventListener('click', () => {
+      noClickCount++;
+      noBtn.textContent = noTexts[noClickCount % noTexts.length];
+      moveButton();
+    });
 
-  noBtn.addEventListener('click', () => {
-    noClickCount++;
-    const newText = noTexts[noClickCount % noTexts.length];
-    noBtn.textContent = newText;
-    announce(`No selected. ${newText}`);
-    moveButton();
-  });
+    function moveButton() {
+      const maxX = 350;
+      const maxY = 150;
 
-  function moveButton() {
-    const maxX = 350;
-    const maxY = 150;
+      const randomX = Math.random() * maxX - 50;
+      const randomY = Math.random() * maxY - 50;
 
-    const randomX = Math.random() * maxX - 50;
-    const randomY = Math.random() * maxY - 50;
-
-    noBtn.style.left = randomX + 'px';
-    noBtn.style.top = randomY + 'px';
-  }
-
-  yesBtn.addEventListener('click', () => {
-    question.style.display = 'none';
-    buttonsWrap.style.display = 'none';
-    success.style.display = 'block';
-    resetBtn.style.display = 'inline-block';
-    hearts.style.display = 'block';
-
-    announce('Success! Yay! You made my day!');
-    createHearts();
-
-    // Move focus to reset so keyboard users aren't stranded
-    resetBtn.focus();
-  });
-
-  function createHearts() {
-    for (let i = 0; i < 50; i++) {
-      setTimeout(() => {
-        const heart = document.createElement('div');
-        heart.className = 'heart';
-        heart.textContent = '❤️';
-        heart.style.left = Math.random() * 100 + '%';
-        heart.style.animationDelay = Math.random() * 2 + 's';
-        heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-        hearts.appendChild(heart);
-      }, i * 100);
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
     }
-  }
 
-  function reset() {
-    // Restore UI
-    question.style.display = 'block';
-    buttonsWrap.style.display = 'flex';
-    success.style.display = 'none';
-    resetBtn.style.display = 'none';
+    yesBtn.addEventListener('click', () => {
+      question.style.display = 'none';
+      document.querySelector('.buttons').style.display = 'none';
+      success.style.display = 'block';
+      hearts.style.display = 'block';
+      createHearts();
+    });
 
-    // Reset state
-    noClickCount = 0;
-    noBtn.textContent = initialNoText;
-
-    // Reset button position
-    noBtn.style.left = initialNoLeft;
-    noBtn.style.top = initialNoTop;
-
-    // Clear hearts + hide layer
-    hearts.innerHTML = '';
-    hearts.style.display = 'none';
-
-    announce('Reset. Back to the question.');
-    yesBtn.focus();
-  }
-
-  resetBtn.addEventListener('click', reset);
-
-  // Optional keyboard shortcut: press "R" to reset after success
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === 'r' || e.key === 'R') && resetBtn.style.display !== 'none') {
-      reset();
+    function createHearts() {
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'heart';
+          heart.textContent = '❤️';
+          heart.style.left = Math.random() * 100 + '%';
+          heart.style.animationDelay = Math.random() * 2 + 's';
+          heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+          hearts.appendChild(heart);
+        }, i * 100);
+      }
     }
-  });
-</script>
+  </script>
 </body>
 </html>
